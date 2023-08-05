@@ -5,49 +5,84 @@ class StatError(Exception):
     pass
 
 class Stat:
-    icon_change_threshold = [4, 9, 13] # thresholds, upon reaching which, the icon would change
-    __exp_round_to = 10 # exp thresholds will be rounded to this value
+    icon_change_threshold = [4, 9, 13]  # thresholds, upon reaching which, the icon would change
+    __exp_round_to = 10  # exp thresholds will be rounded to this value
 
     __min_display_name_length = 3
     __max_display_name_length = 64
 
     def __init__(self, display_name: str, icon_base_name: str = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
-        """
-        Initialize a Stat for Users.
-
-        Args:
-            display_name (str): The display name of the Stat.
-            icon_base_name (str, optional): The base name for the icon associated with this Stat. Defaults to None.
-            exp_requirement_mult (float, optional): The multiplier for experience required to level up. Defaults to 1.3.
-            exp_requirement_flat_bonus (int, optional): The flat amount added to exp requierement per level. Defaults to 150.
-            level_base_requirement (int, optional): The base experience requirement for level 1. Defaults to 100.
-        """
-        if len(display_name)<self.__min_display_name_length:
-            raise StatError(f'Display name error! Stat name is too short({len(display_name)}<{self.__min_display_name_length})! Your name: {display_name}')
-        if len([c for c in display_name if c.isalnum])<self.__min_display_name_length:
-            raise StatError(f'Display name error! Stat name has to be in English! Your name: {display_name}')
-        if len(display_name)>self.__max_display_name_length:
-            raise StatError(f'Display name error! Stat name is too long({len(display_name)}>{self.__max_display_name_length})! Your name: {display_name}')
+        self._display_name = None
+        self._exp_requirement_mult = None
+        self._exp_requirement_flat_bonus = None
+        self._level_base_requirement = None
+        self._id_name = None
+        self._icon_base_name = None
 
         self.display_name = display_name
         self.exp_requirement_mult = exp_requirement_mult
         self.exp_requirement_flat_bonus = exp_requirement_flat_bonus
         self.level_base_requirement = level_base_requirement
-        self.id_name = self.__get_id_name__(display_name)
         self.icon_base_name = icon_base_name if icon_base_name else self.id_name
 
+    @property
+    def display_name(self):
+        return self._display_name
+
+    @display_name.setter
+    def display_name(self, value):
+        if len(value) < self.__min_display_name_length:
+            raise StatError(f"Display name error! Stat name is too short({len(value)}<{self.__min_display_name_length})! Your name: {value}")
+        if len([c for c in value if c.isalnum()]) < self.__min_display_name_length:
+            raise StatError(f"Display name error! Stat name has to be in English! Your name: {value}")
+        if len(value) > self.__max_display_name_length:
+            raise StatError(f"Display name error! Stat name is too long({len(value)}>{self.__max_display_name_length})! Your name: {value}")
+        self._display_name = value
+        self._id_name = self.__get_id_name__(value)
+
+    @property
+    def exp_requirement_mult(self):
+        return self._exp_requirement_mult
+
+    @exp_requirement_mult.setter
+    def exp_requirement_mult(self, value):
+        # Add any validation checks here
+        self._exp_requirement_mult = value
+
+    @property
+    def exp_requirement_flat_bonus(self):
+        return self._exp_requirement_flat_bonus
+
+    @exp_requirement_flat_bonus.setter
+    def exp_requirement_flat_bonus(self, value):
+        # Add any validation checks here
+        self._exp_requirement_flat_bonus = value
+
+    @property
+    def level_base_requirement(self):
+        return self._level_base_requirement
+
+    @level_base_requirement.setter
+    def level_base_requirement(self, value):
+        # Add any validation checks here
+        self._level_base_requirement = value
+
+    @property
+    def id_name(self):
+        return self._id_name
+
+    @property
+    def icon_base_name(self):
+        return self._icon_base_name
+
+    @icon_base_name.setter
+    def icon_base_name(self, value):
+        # Add any validation checks here
+        self._icon_base_name = value
+
     def __get_id_name__(self, display_name: str = None) -> str:
-        """
-        Get the ID name for the Stat based on its display name.
-
-        Args:
-            display_name (str, optional): The display name of the Stat. Defaults to None if not provided.
-
-        Returns:
-            str: The ID name for the Stat.
-        """
         if not display_name:
-            display_name = self.display_name
+            display_name = self._display_name
         display_name = display_name.strip()
         res = ''.join(e for e in display_name if e.isalnum() or e == ' ').lower()
         return res.replace(' ', '_')
