@@ -8,8 +8,6 @@ class Stat:
     icon_change_threshold = [4, 9, 13]  # thresholds, upon reaching which, the icon would change
     __exp_round_to = 10  # exp thresholds will be rounded to this value
 
-    __min_display_name_length = 3
-    __max_display_name_length = 64
 
     def __init__(self, display_name: str, icon_base_name: str = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
         self._display_name = None
@@ -26,36 +24,43 @@ class Stat:
         self.icon_base_name = icon_base_name if icon_base_name else self.id_name
 
     @property
-    def display_name(self):
+    def display_name(self)->str:
         return self._display_name
 
     @display_name.setter
-    def display_name(self, value):
-        if len(value) < self.__min_display_name_length:
-            raise StatError(f"Display name error! Stat name is too short({len(value)}<{self.__min_display_name_length})! Your name: {value}")
-        if len([c for c in value if c.isalnum()]) < self.__min_display_name_length:
-            raise StatError(f"Display name error! Stat name has to be in English! Your name: {value}")
-        if len(value) > self.__max_display_name_length:
-            raise StatError(f"Display name error! Stat name is too long({len(value)}>{self.__max_display_name_length})! Your name: {value}")
+    def display_name(self, value:str):
+        min_display_name_length = 3
+        max_display_name_length = 64
+
+        if len(value) < min_display_name_length:
+            raise StatError(f"Stat name is too short({len(value)}<{min_display_name_length})! Your name: {value}")
+        if len([c for c in value if c.isalnum()]) < min_display_name_length:
+            raise StatError(f"Stat name has to be in English! Your name: {value}")
+        if len(value) > max_display_name_length:
+            raise StatError(f"Stat name is too long({len(value)}>{max_display_name_length})! Your name: {value}")
         self._display_name = value
         self._id_name = self.__get_id_name__(value)
 
     @property
-    def exp_requirement_mult(self):
+    def exp_requirement_mult(self)->float:
         return self._exp_requirement_mult
 
     @exp_requirement_mult.setter
-    def exp_requirement_mult(self, value):
-        # Add any validation checks here
+    def exp_requirement_mult(self, value:float):
+        bounds = (1,10)
+        if value<bounds[0] or value>bounds[1]:
+            raise StatError(f"Stat experience requirement multiplier is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
         self._exp_requirement_mult = value
 
     @property
-    def exp_requirement_flat_bonus(self):
+    def exp_requirement_flat_bonus(self)->int:
         return self._exp_requirement_flat_bonus
 
     @exp_requirement_flat_bonus.setter
-    def exp_requirement_flat_bonus(self, value):
-        # Add any validation checks here
+    def exp_requirement_flat_bonus(self, value:int):
+        bounds = (0, 999999)
+        if value<bounds[0] or value>bounds[1]:
+            raise StatError(f"Stat experience requirement flat bonus is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
         self._exp_requirement_flat_bonus = value
 
     @property
@@ -63,8 +68,10 @@ class Stat:
         return self._level_base_requirement
 
     @level_base_requirement.setter
-    def level_base_requirement(self, value):
-        # Add any validation checks here
+    def level_base_requirement(self, value:int):
+        bounds = (0, 999999)
+        if value<bounds[0] or value>bounds[1]:
+            raise StatError(f"Stat experience base requirements is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
         self._level_base_requirement = value
 
     @property
@@ -77,10 +84,19 @@ class Stat:
 
     @icon_base_name.setter
     def icon_base_name(self, value):
-        # Add any validation checks here
+        #TODO: add check for if icon exists (mby pull list from db)
         self._icon_base_name = value
 
     def __get_id_name__(self, display_name: str = None) -> str:
+        """
+        Get id for stat from display name
+
+        Args:
+            display_name (str): Display name for stat
+
+        Returns:
+            str: Id name, created by removing special characters from display name (` Skill ABC!` -> `skill_abc`).
+        """
         if not display_name:
             display_name = self._display_name
         display_name = display_name.strip()
@@ -147,7 +163,6 @@ class Stat:
             return {'level': 0, 'min_exp': 0, 'max_exp': self.level_base_requirement-1}
 
         for i in range(1, 51):
-            #
             min_exp, max_exp = self.bounds_for_level(i)
             if exp >= min_exp and exp <= max_exp:
                 return {'level': i, 'min_exp': min_exp, 'max_exp': max_exp}
@@ -208,7 +223,7 @@ class Stat:
         """
         return f'Stat({self.display_name}, {self.icon_base_name}, {self.exp_requirement_mult}, {self.exp_requirement_flat_bonus}, {self.level_base_requirement})'
 
-
+#TODO: remove stuff below
 # test_stat = Stat(display_name=' Magic Skill_!', exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100)
 
 # for i in range(1, 51):
