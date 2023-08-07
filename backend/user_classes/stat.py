@@ -2,14 +2,41 @@ from typing import List, Tuple
 import math
 
 class StatError(Exception):
+    """
+    Custom exception class for Stat-related errors.
+    """
     pass
 
 class Stat:
+    """
+    A class representing a statistical attribute with associated properties.
+
+    Args:
+        display_name (str): The display name of the Stat.
+        icon_base_name (str, optional): The base name for the icon associated with this Stat. Defaults to None.
+        exp_requirement_mult (float, optional): The multiplier for experience required to level up. Defaults to 1.3.
+        exp_requirement_flat_bonus (int, optional): The flat amount added to experience requirement per level. Defaults to 150.
+        level_base_requirement (int, optional): The base experience requirement for level 1. Defaults to 100.
+
+    Attributes:
+        icon_change_threshold (list): Thresholds upon reaching which the icon would change.
+        __exp_round_to (int): Experience thresholds will be rounded to this value.
+    """
     icon_change_threshold = [4, 9, 13]  # thresholds, upon reaching which, the icon would change
     __exp_round_to = 10  # exp thresholds will be rounded to this value
 
 
     def __init__(self, display_name: str, icon_base_name: str = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
+        """
+        Initialize a Stat.
+
+        Args:
+            display_name (str): The display name of the Stat.
+            icon_base_name (str, optional): The base name for the icon associated with this Stat. Defaults to None.
+            exp_requirement_mult (float, optional): The multiplier for experience required to level up. Defaults to 1.3.
+            exp_requirement_flat_bonus (int, optional): The flat amount added to experience requirement per level. Defaults to 150.
+            level_base_requirement (int, optional): The base experience requirement for level 1. Defaults to 100.
+        """
         self._display_name = None
         self._exp_requirement_mult = None
         self._exp_requirement_flat_bonus = None
@@ -25,10 +52,25 @@ class Stat:
 
     @property
     def display_name(self)->str:
+        """
+        Get the display name of the Stat.
+
+        Returns:
+            str: The display name of the Stat.
+        """
         return self._display_name
 
     @display_name.setter
     def display_name(self, value:str):
+        """
+        Set the display name of the Stat.
+
+        Args:
+            value (str): The new display name for the Stat.
+
+        Raises:
+            StatError: If the display name does not meet length or alphanumeric criteria.
+        """
         min_display_name_length = 3
         max_display_name_length = 64
 
@@ -43,10 +85,25 @@ class Stat:
 
     @property
     def exp_requirement_mult(self)->float:
+        """
+        Get the experience requirement multiplier of the Stat.
+
+        Returns:
+            float: The experience requirement multiplier of the Stat.
+        """
         return self._exp_requirement_mult
 
     @exp_requirement_mult.setter
     def exp_requirement_mult(self, value:float):
+        """
+        Set the experience requirement multiplier of the Stat.
+
+        Args:
+            value (float): The new experience requirement multiplier for the Stat.
+
+        Raises:
+            StatError: If the value is outside the bounds.
+        """
         bounds = (1,10)
         if value<bounds[0] or value>bounds[1]:
             raise StatError(f"Stat experience requirement multiplier is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
@@ -54,10 +111,25 @@ class Stat:
 
     @property
     def exp_requirement_flat_bonus(self)->int:
+        """
+        Get the experience requirement flat bonus of the Stat.
+
+        Returns:
+            int: The experience requirement flat bonus of the Stat.
+        """
         return self._exp_requirement_flat_bonus
 
     @exp_requirement_flat_bonus.setter
     def exp_requirement_flat_bonus(self, value:int):
+        """
+        Set the experience requirement flat bonus of the Stat.
+
+        Args:
+            value (int): The new experience requirement flat bonus for the Stat.
+
+        Raises:
+            StatError: If the value is outside the specified bounds.
+        """
         bounds = (0, 999999)
         if value<bounds[0] or value>bounds[1]:
             raise StatError(f"Stat experience requirement flat bonus is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
@@ -65,10 +137,25 @@ class Stat:
 
     @property
     def level_base_requirement(self):
+        """
+        Get the base experience requirement for level 1 of the Stat.
+
+        Returns:
+            int: The base experience requirement for level 1 of the Stat.
+        """
         return self._level_base_requirement
 
     @level_base_requirement.setter
     def level_base_requirement(self, value:int):
+        """
+        Set the base experience requirement for level 1 of the Stat.
+
+        Args:
+            value (int): The new base experience requirement for level 1 of the Stat.
+
+        Raises:
+            StatError: If the value is outside the specified bounds.
+        """
         bounds = (0, 999999)
         if value<bounds[0] or value>bounds[1]:
             raise StatError(f"Stat experience base requirements is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
@@ -76,14 +163,32 @@ class Stat:
 
     @property
     def id_name(self):
+        """
+        Get the ID name associated with the Stat.
+
+        Returns:
+            str: The ID name associated with the Stat.
+        """
         return self._id_name
 
     @property
     def icon_base_name(self):
+        """
+        Get the base name for the icon associated with the Stat.
+
+        Returns:
+            str: The base name for the icon associated with the Stat.
+        """
         return self._icon_base_name
 
     @icon_base_name.setter
     def icon_base_name(self, value):
+        """
+        Set the base name for the icon associated with the Stat.
+
+        Args:
+            value: The new base name for the icon associated with the Stat.
+        """
         #TODO: add check for if icon exists (mby pull list from db)
         self._icon_base_name = value
 
