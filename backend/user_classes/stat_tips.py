@@ -145,3 +145,21 @@ class StatTips:
         self.previously_used_tip[level] = res
         return res
     
+    def __str__(self) -> str:
+        """
+        Return a human-readable string representation of the StatTips object.
+
+        Returns:
+            str: A string representation of the StatTips object.
+        """
+        show_lower_tips_str = "enabled" if self.show_lower_level_tips else "disabled"
+        return f"StatTips object with min_level={self.min_level}, max_level={self.max_level}, show_lower_level_tips={show_lower_tips_str})"
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the StatTips object that can be used to recreate the object.
+
+        Returns:
+            str: A string representation of the StatTips object.
+        """
+        return f"StatTips(tips={self.tips}, min_level={self.min_level}, max_level={self.max_level}, show_lower_level_tips={self.show_lower_level_tips})"
