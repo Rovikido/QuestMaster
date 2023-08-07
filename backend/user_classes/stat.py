@@ -1,5 +1,6 @@
-from typing import List, Tuple
 import math
+
+from backend.user_classes.stat_tips import StatTips
 
 class StatError(Exception):
     """
@@ -9,7 +10,7 @@ class StatError(Exception):
 
 class Stat:
     """
-    A class representing a statistical attribute with associated properties.
+    A class representing a attribute for future use in User.
 
     Args:
         display_name (str): The display name of the Stat.
@@ -26,7 +27,7 @@ class Stat:
     __exp_round_to = 10  # exp thresholds will be rounded to this value
 
 
-    def __init__(self, display_name: str, icon_base_name: str = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
+    def __init__(self, display_name: str, icon_base_name: str = None, tips: StatTips = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
         """
         Initialize a Stat.
 
@@ -38,13 +39,14 @@ class Stat:
             level_base_requirement (int, optional): The base experience requirement for level 1. Defaults to 100.
         """
         self._display_name = None
+        self._icon_base_name = None
         self._exp_requirement_mult = None
         self._exp_requirement_flat_bonus = None
         self._level_base_requirement = None
         self._id_name = None
-        self._icon_base_name = None
 
         self.display_name = display_name
+        self.tips:StatTips = tips if tips else StatTips()
         self.exp_requirement_mult = exp_requirement_mult
         self.exp_requirement_flat_bonus = exp_requirement_flat_bonus
         self.level_base_requirement = level_base_requirement
