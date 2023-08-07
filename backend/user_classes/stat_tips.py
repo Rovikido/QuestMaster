@@ -73,7 +73,8 @@ class StatTips:
             value (Dict[int, List[str]]): Dictionary containing tips for specific levels.
         """
         self._tips = {level: [] for level in range(self.min_level, self.max_level + 1)}
-        self.append(value)
+        if value:
+            self.append(value)
 
     def append(self, value:Dict[int, str]):
         """
