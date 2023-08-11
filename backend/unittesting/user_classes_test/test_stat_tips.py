@@ -39,3 +39,4 @@ def test_get_tip_for_level(dictionary):
     assert any([res.find(string) != 0 for string in dictionary[3]])
     res = test_stat_tips.get_tip_for_level(2)
     assert any([res.find(string) != 0 for string in dictionary[2]])
+    
