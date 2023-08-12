@@ -61,7 +61,8 @@ class Taks:
         self.difficulty_modifier = difficulty_modifier
         self.time_modifier = time_modifier
         self.base_exp_reward = base_exp_reward
-        self.deadline = deadline
+        if deadline:
+            self.deadline = deadline
 
     @property
     def display_name(self) -> str:
@@ -247,5 +248,6 @@ class Taks:
         Returns:
             int: The exp rewarded for task completion.
         """
+        # TODO: add and test check for getting reward for already completed task
         self.status = TaskStatus.COMPLETED
         return int(self.base_exp_reward * self.difficulty_modifier * self.time_modifier)
