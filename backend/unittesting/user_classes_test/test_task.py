@@ -2,7 +2,7 @@ import datetime
 import pytest
 from backend.user_classes.other.enums import TaskStatus
 from backend.user_classes.stat import Stat
-from backend.user_classes.taks import Taks
+from backend.user_classes.task import Task
 
 @pytest.fixture
 def sample_stat():
@@ -10,7 +10,7 @@ def sample_stat():
 
 @pytest.fixture
 def sample_task(sample_stat):
-    return Taks("Sample Task", sample_stat)
+    return Task("Sample Task", sample_stat)
 
 def test_task_creation(sample_task):
     assert sample_task.display_name == "Sample Task"

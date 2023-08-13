@@ -5,7 +5,7 @@ from backend.user_classes.stat import Stat
 
 #TODO: Integrate with the User
 #TODO: Test
-class Taks:
+class Task:
     """
     A class representing a task in an RPG-like task list.
 
