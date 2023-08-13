@@ -5,3 +5,4 @@ class TaskStatus(Enum):
     FAILED = "Failed"
     IN_PROGRESS = "In Progress"
     ABANDONED = "Abandoned"
+    PAST_DUE = "Past Due"
