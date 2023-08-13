@@ -251,3 +251,17 @@ class Task:
         # TODO: add and test check for getting reward for already completed task
         self.status = TaskStatus.COMPLETED
         return int(self.base_exp_reward * self.difficulty_modifier * self.time_modifier)
+    
+    def check_for_deadline(self, cur_time:datetime.datetime=None) -> None:
+        """
+        Check if the deadline is not exceeded. Changes status to Past Due if deadline is exceeded
+        
+        Args:
+            cur_time(datetime): current time (for batch checks and testing)
+        """
+        if not self.deadline:
+            raise ReferenceError(f'Task ({self.display_name}) does not have deadline to check!')
+
+        if self.deadline < (cur_time if cur_time else datetime.datetime.now()):
+            self.status = TaskStatus.PAST_DUE
+        
