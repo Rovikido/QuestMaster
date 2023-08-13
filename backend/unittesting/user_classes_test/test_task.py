@@ -81,4 +81,11 @@ def test_get_task_reward(sample_task):
     sample_task.time_modifier = 0.8
     assert sample_task.get_task_reward() == 12
 
+def test_check_for_deadline(sample_task):
+    future_date = datetime.datetime.now() + datetime.timedelta(days=7)
+    deadline = datetime.datetime.now() + datetime.timedelta(hours=2)
+    assert sample_task.status == TaskStatus.IN_PROGRESS
+    sample_task.deadline = deadline
+    sample_task.check_for_deadline(future_date)
+    assert sample_task.status == TaskStatus.PAST_DUE
 
