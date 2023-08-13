@@ -108,7 +108,7 @@ class Stat:
         """
         bounds = (1,10)
         if value<bounds[0] or value>bounds[1]:
-            raise StatError(f"Stat experience requirement multiplier is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
+            raise StatError(f"Stat experience requirement multiplier is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
         self._exp_requirement_mult = value
 
     @property
@@ -134,7 +134,7 @@ class Stat:
         """
         bounds = (0, 999999)
         if value<bounds[0] or value>bounds[1]:
-            raise StatError(f"Stat experience requirement flat bonus is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
+            raise StatError(f"Stat experience requirement flat bonus is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
         self._exp_requirement_flat_bonus = value
 
     @property
@@ -160,7 +160,7 @@ class Stat:
         """
         bounds = (0, 999999)
         if value<bounds[0] or value>bounds[1]:
-            raise StatError(f"Stat experience base requirements is outside the bounds({bounds[0]-bounds[1]})! Your value: {value}")
+            raise StatError(f"Stat experience base requirements is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
         self._level_base_requirement = value
 
     @property
