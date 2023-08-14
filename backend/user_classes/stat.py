@@ -21,10 +21,10 @@ class Stat:
 
     Attributes:
         icon_change_threshold (list): Thresholds upon reaching which the icon would change.
-        __exp_round_to (int): Experience thresholds will be rounded to this value.
+        exp_round_to (int): Experience thresholds will be rounded to this value.
     """
     icon_change_threshold = [4, 9, 13]  # thresholds, upon reaching which, the icon would change
-    __exp_round_to = 10  # exp thresholds will be rounded to this value
+    exp_round_to = 10  # exp thresholds will be rounded to this value
 
 
     def __init__(self, display_name: str, icon_base_name: str = None, tips: StatTips = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
@@ -252,8 +252,8 @@ class Stat:
         Returns:
             set (int): set of integers, with lower and upper bound (lower, upper).
         """
-        min_exp = round(self.level_base_requirement * math.pow(self.exp_requirement_mult, level-1)/self.__exp_round_to)*self.__exp_round_to + self.exp_requirement_flat_bonus * (level-1)
-        max_exp = round(self.level_base_requirement * math.pow(self.exp_requirement_mult, level)/self.__exp_round_to)*self.__exp_round_to + self.exp_requirement_flat_bonus * (level) - 1
+        min_exp = round(self.level_base_requirement * math.pow(self.exp_requirement_mult, level-1)/self.exp_round_to)*self.exp_round_to + self.exp_requirement_flat_bonus * (level-1)
+        max_exp = round(self.level_base_requirement * math.pow(self.exp_requirement_mult, level)/self.exp_round_to)*self.exp_round_to + self.exp_requirement_flat_bonus * (level) - 1
         return (min_exp, max_exp)
 
     def __exp_to_level(self, exp: int) -> dict:
