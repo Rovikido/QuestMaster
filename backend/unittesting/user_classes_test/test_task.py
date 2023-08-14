@@ -2,7 +2,7 @@ import datetime
 import pytest
 from backend.user_classes.other.enums import TaskStatus
 from backend.user_classes.stat import Stat
-from backend.user_classes.task import Task
+from backend.user_classes.task import Task, TaskAlreadyCompletedError
 
 @pytest.fixture
 def sample_stat():
@@ -19,7 +19,7 @@ def test_task_creation(sample_task):
     assert sample_task.difficulty_modifier == 1
     assert sample_task.time_modifier == 1
     assert sample_task.base_exp_reward == 10
-    assert sample_task.deadline is None
+    assert sample_task.due_date is None
     assert isinstance(sample_task.creation_time, datetime.datetime)
     assert sample_task.status == TaskStatus.IN_PROGRESS
 
@@ -67,25 +67,31 @@ def test_set_base_exp_reward(sample_task):
     sample_task.base_exp_reward = 50
     assert sample_task.base_exp_reward == 50
 
-def test_set_deadline(sample_task):
+def test_set_due_date(sample_task):
     with pytest.raises(ValueError):
         past_date = datetime.datetime.now() - datetime.timedelta(days=1)
-        sample_task.deadline = past_date
+        sample_task.due_date = past_date
     future_date = datetime.datetime.now() + datetime.timedelta(days=7)
-    sample_task.deadline = future_date
-    assert sample_task.deadline == future_date
+    sample_task.due_date = future_date
+    assert sample_task.due_date == future_date
 
-def test_get_task_reward(sample_task):
-    assert sample_task.get_task_reward() == 10
+def test_complete_task(sample_task):
+    assert sample_task.complete_task() == 10 * (1-sample_task.time_modifier_penalty)
     sample_task.difficulty_modifier = 1.5
     sample_task.time_modifier = 0.8
-    assert sample_task.get_task_reward() == 12
+    with pytest.raises(TaskAlreadyCompletedError):
+        sample_task.complete_task()
+    sample_task.status = TaskStatus.IN_PROGRESS
+    assert sample_task.complete_task() == round(10 * 1.5 * 0.8 * (1-sample_task.time_modifier_penalty) / sample_task.exp_round_to) * sample_task.exp_round_to
+    sample_task.due_date_penalty = 0.25
+    sample_task.status = TaskStatus.PAST_DUE
+    assert sample_task.complete_task() == round(10 * 1.5 * 0.8 * (1-sample_task.time_modifier_penalty) * 0.75 / sample_task.exp_round_to) * sample_task.exp_round_to
 
-def test_check_for_deadline(sample_task):
+def test_check_for_due_date(sample_task):
     future_date = datetime.datetime.now() + datetime.timedelta(days=7)
-    deadline = datetime.datetime.now() + datetime.timedelta(hours=2)
+    due_date = datetime.datetime.now() + datetime.timedelta(hours=2)
     assert sample_task.status == TaskStatus.IN_PROGRESS
-    sample_task.deadline = deadline
-    sample_task.check_for_deadline(future_date)
+    sample_task.due_date = due_date
+    sample_task.check_for_due_date(future_date)
     assert sample_task.status == TaskStatus.PAST_DUE
 
