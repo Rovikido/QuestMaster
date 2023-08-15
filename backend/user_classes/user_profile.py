@@ -25,6 +25,9 @@ class UserProfile:
             stat_exp (Dict[Stat, int]): A dictionary mapping Stat objects to user corresponding experience values.
             tasks (List[Task]): A list of Task objects.
         """
+        self._stat_exp = {}
+        self._tasks = []
+
         self.stat_exp = stat_exp
         self.tasks = tasks
 
