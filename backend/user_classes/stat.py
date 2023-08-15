@@ -310,6 +310,15 @@ class Stat:
         if type(__value) != type(self):
             return False
         return self.id_name == __value.id_name or self.icon_base_name == __value.icon_base_name
+    
+    def __hash__(self):
+        """
+        Calculate the hash value for the Stat object.
+
+        Returns:
+            int: The hash value.
+        """
+        return hash(self.id_name) ^ hash(self.icon_base_name) ^ hash(self.display_name)
 
     def __str__(self) -> str:
         """
