@@ -106,9 +106,11 @@ class Stat:
         Raises:
             StatError: If the value is outside the bounds.
         """
+        digits_after_decimal = 5
         bounds = (1,10)
-        if value<bounds[0] or value>bounds[1]:
+        if value<bounds[0] or value>=bounds[1]:
             raise StatError(f"Stat experience requirement multiplier is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
+        value = round(value, digits_after_decimal)
         self._exp_requirement_mult = value
 
     @property
@@ -192,6 +194,9 @@ class Stat:
             value: The new base name for the icon associated with the Stat.
         """
         #TODO: add check for if icon exists (mby pull list from db)
+        bounds = (3, 256)
+        if len(value)<bounds[0] or len(value)>bounds[1]:
+            raise StatError(f"Icon base name length is outside the bounds({bounds}, {bounds[1]})! Your length: {len(value)}")
         self._icon_base_name = value
 
     def __get_id_name__(self, display_name: str = None) -> str:
