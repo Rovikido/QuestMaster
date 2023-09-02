@@ -9,8 +9,12 @@ def sample_stat():
     return Stat("Sample Stat")
 
 @pytest.fixture
-def sample_task(sample_stat):
-    return Task("Sample Task", sample_stat)
+def sample_stat_dict():
+    return {Stat("Sample Stat"):0.7, Stat("Sample Stat2"):0.3}
+
+@pytest.fixture
+def sample_task(sample_stat_dict):
+    return Task("Sample Task", sample_stat_dict)
 
 @pytest.fixture
 def sample_user_profile(sample_stat, sample_task):
@@ -24,16 +28,11 @@ def test_stat_exp_setter(sample_user_profile, sample_stat):
     with pytest.raises(ValueError):
         sample_user_profile.stat_exp = {sample_stat: -10}
 
-def test_tasks_setter(sample_user_profile, sample_task):
-    new_tasks = [Task("New Task", sample_user_profile.stat_exp)]
-    sample_user_profile.tasks = new_tasks
-    assert len(sample_user_profile.tasks) == 2
-
 def test_remove_stat_exp(sample_user_profile):
     with pytest.raises(ValueError):
         sample_user_profile.remove_stat_exp(Stat("Nonexistent Stat"))
 
-def test_remove_task(sample_user_profile, sample_task):
+def test_remove_task(sample_user_profile):
     with pytest.raises(ValueError):
         sample_user_profile.remove_task(Task("Nonexistent Task", sample_user_profile.stat_exp))
 

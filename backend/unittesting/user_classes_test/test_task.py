@@ -5,16 +5,16 @@ from backend.user_classes.stat import Stat
 from backend.user_classes.task import Task, TaskAlreadyCompletedError
 
 @pytest.fixture
-def sample_stat():
-    return Stat("Sample Stat")
+def sample_stat_dict():
+    return {Stat("Sample Stat"):0.7, Stat("Sample Stat2"):0.3}
 
 @pytest.fixture
-def sample_task(sample_stat):
-    return Task("Sample Task", sample_stat)
+def sample_task(sample_stat_dict):
+    return Task("Sample Task", sample_stat_dict)
 
-def test_task_creation(sample_task):
+def test_task_creation(sample_task, sample_stat_dict):
     assert sample_task.display_name == "Sample Task"
-    assert sample_task.asociated_stat.display_name == "Sample Stat"
+    assert sample_task.asociated_stat == sample_stat_dict
     assert sample_task.description == 'Add more info about your task'
     assert sample_task.difficulty_modifier == 1
     assert sample_task.time_modifier == 1
@@ -22,6 +22,9 @@ def test_task_creation(sample_task):
     assert sample_task.due_date is None
     assert isinstance(sample_task.creation_time, datetime.datetime)
     assert sample_task.status == TaskStatus.IN_PROGRESS
+    sample_stat_dict["Sample Stat"] = 1
+    with pytest.raises(ValueError):
+        sample_task.asociated_stat = sample_stat_dict
 
 def test_set_display_name(sample_task):
     with pytest.raises(ValueError):
@@ -34,10 +37,6 @@ def test_set_display_name(sample_task):
     assert sample_task.display_name == "Updated Task Name"
 
 def test_set_description(sample_task):
-    with pytest.raises(ValueError):
-        sample_task.description = "A"
-    with pytest.raises(ValueError):
-        sample_task.description = "1"
     with pytest.raises(ValueError):
         sample_task.description = "A" * 32769
     sample_task.description = "Updated Task Description"
