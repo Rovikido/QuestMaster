@@ -1,4 +1,5 @@
 import datetime
+from typing import Dict, Optional, List
 
 from backend.user_classes.other.enums import TaskStatus
 from backend.user_classes.stat import Stat
@@ -9,14 +10,13 @@ class TaskAlreadyCompletedError(Exception):
     pass
 
 #TODO: Integrate with the User
-#TODO: Test
 class Task:
     """
     A class representing a task in an RPG-like task list.
 
     Args:
         display_name (str): The display name of the task.
-        asociated_stat (Stat): The associated Stat object for the task.
+        asociated_stat (Dict[Stat, float]): Dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
         description (str, optional): A description of the task. Defaults to 'Add more info about your task'.
         difficulty_modifier (float, optional): An exp modifier, representing task difficulty. Defaults to 1.
         time_modifier (float, optional): An exp modifier, representing task time consumption. Defaults to 1.
@@ -25,7 +25,7 @@ class Task:
 
     Attributes:
         display_name (str): The display name of the task.
-        asociated_stat (Stat): The associated Stat object for the task.
+        asociated_stat (Dict[Stat, float]): Dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
         description (str): A description of the task.
         difficulty_modifier (float): An exp modifier for task difficulty.
         time_modifier (float): An exp modifier for task time consumption.
@@ -41,14 +41,14 @@ class Task:
     #TODO: change asociated stat and name to have default value, so when user presses create, they get template, that they can customize further
     #TODO: add reference to user as a property for db storage
     #TODO: transform init into kwargs based one
-    def __init__(self, display_name: str, asociated_stat: Stat, description: str = 'Add more info about your task', difficulty_modifier: float = 1, 
+    def __init__(self, display_name: str, asociated_stat: Dict[Stat, float], description: str = 'Add more info about your task', difficulty_modifier: float = 1, 
                  time_modifier: float = 1, base_exp_reward: int = 10, due_date: datetime.datetime = None, due_date_penalty: float = 0.25) -> None:
         """
         Initialize a Task instance with provided parameters.
 
         Args:
             display_name (str): The display name of the task.
-            asociated_stat (Stat): The associated Stat object for the task.
+            asociated_stat (Dict[Stat, float]): Dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
             description (str, optional): A description of the task. Defaults to 'Add more info about your task'.
             difficulty_modifier (float, optional): An exp modifier, representing task difficulty. Defaults to 1.
             time_modifier (float, optional): An exp modifier, representing task time consumption. Defaults to 1.
@@ -57,6 +57,8 @@ class Task:
             due_date_penalty (float, optional): Exp penalty for missing the due_date. Defaults to 0.25.
         """
         self._display_name = None
+        #TODO: rename to stats
+        self._asociated_stat = {}
         self._description = None
         self._difficulty_modifier = None
         self._time_modifier = None
@@ -67,7 +69,7 @@ class Task:
         self._due_date_penalty = 0
         
         self.display_name = display_name
-        self.asociated_stat = asociated_stat
+        self.asociated_stat = asociated_stat 
         self.description = description
         self.difficulty_modifier = difficulty_modifier
         self.time_modifier = time_modifier
@@ -108,6 +110,36 @@ class Task:
         self._display_name = value
 
     @property
+    def asociated_stat(self) -> Dict[Stat, float]:
+        """
+        Get the dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
+
+        Returns:
+            Dict[Stat, float]: Dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
+        """
+        return self._asociated_stat
+    
+    @asociated_stat.setter
+    def asociated_stat(self, value:Dict[Stat, float]):
+        """
+        Set the dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
+
+        Args:
+            value(Dict[Stat, float]): Dictionary of the associated Stat objects for the task with values, representing significane of stat for the task.
+
+        Raises:
+            ValueError: If the sum of values is less than 0, more than 1, or the dictionary is empty.
+        """
+        bounds = (0, 1.00001)
+        total = sum(list(value.values()))
+        if total < bounds[0] or total > bounds[1]:
+            raise ValueError(f"Sum of the stat values is outside the bounds({bounds[0]}, {bounds[1]})! Your sum: {total}")
+        if len(value)==0:
+            raise ValueError(f"Your dictionary is empty!")
+        self._asociated_stat.clear()
+        self._asociated_stat = {stat: mult for stat, mult in value.items()}
+
+    @property
     def description(self) -> str:
         """
         Get the description of the task.
@@ -128,8 +160,8 @@ class Task:
         Raises:
             ValueError: If the provided description is too short, not in English, or too long.
         """
-        min_description_length = 3
-        max_description_length = 32768
+        min_description_length = 0
+        max_description_length = 30000
 
         if len(value) < min_description_length:
             raise ValueError(f"Task description is too short({len(value)}<{min_description_length})! Your name: {value}")
