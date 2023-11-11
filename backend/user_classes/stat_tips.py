@@ -26,7 +26,19 @@ class StatTips:
             min_level (int): Minimum level bound (inclusive). Default is 0.
             max_level (int): Maximum level bound (inclusive). Default is 30.
             show_lower_level_tips (bool): Whether to show tips from lower levels. Default is True.
+        
+        Raises:
+            ValueError: if min_level or max_level is outside the bounds, if max_level is smaller than min_level
         """
+        level_bounds = (0, 100)
+        if min_level<level_bounds[0] or min_level>level_bounds[1]:
+            raise ValueError(f"Minimum level is outside the bounds({level_bounds[0]}-{level_bounds[1]})! Your value: {min_level}.")
+        if max_level<level_bounds[0] or max_level>level_bounds[1]:
+            raise ValueError(f"Max level is outside the bounds({level_bounds[0]}-{level_bounds[1]})! Your value: {max_level}.")
+        if max_level<min_level: 
+            raise ValueError(f'Max_level cannot be smaller than min_level!')
+        #TODO: add test for constraints
+
         self._min_level = min_level
         self._max_level = max_level
         self.show_lower_level_tips = show_lower_level_tips

@@ -2,12 +2,6 @@ import math
 
 from backend.user_classes.stat_tips import StatTips
 
-class StatError(Exception):
-    """
-    Custom exception class for Stat-related errors.
-    """
-    pass
-
 class Stat:
     """
     A class representing a attribute for future use in User.
@@ -27,7 +21,7 @@ class Stat:
     exp_round_to = 10  # exp thresholds will be rounded to this value
 
 
-    def __init__(self, display_name: str, icon_base_name: str = None, tips: StatTips = None, exp_requirement_mult=1.3, exp_requirement_flat_bonus=150, level_base_requirement=100) -> None:
+    def __init__(self, display_name: str, icon_base_name: str = None, tips: StatTips = None, exp_requirement_mult:float=1.3, exp_requirement_flat_bonus:int=150, level_base_requirement:int=100, exp:int=0) -> None:
         """
         Initialize a Stat.
 
@@ -71,17 +65,17 @@ class Stat:
             value (str): The new display name for the Stat.
 
         Raises:
-            StatError: If the display name does not meet length or alphanumeric criteria.
+            ValueError: If the display name does not meet length or alphanumeric criteria.
         """
         min_display_name_length = 3
         max_display_name_length = 64
 
         if len(value) < min_display_name_length:
-            raise StatError(f"Stat name is too short({len(value)}<{min_display_name_length})! Your name: {value}")
+            raise ValueError(f"Stat name is too short({len(value)}<{min_display_name_length})! Your name: {value}")
         if len([c for c in value if c.isalnum()]) < min_display_name_length:
-            raise StatError(f"Stat name has to be in English! Your name: {value}")
+            raise ValueError(f"Stat name has to be in English! Your name: {value}")
         if len(value) > max_display_name_length:
-            raise StatError(f"Stat name is too long({len(value)}>{max_display_name_length})! Your name: {value}")
+            raise ValueError(f"Stat name is too long({len(value)}>{max_display_name_length})! Your name: {value}")
         self._display_name = value
         self._id_name = self.__get_id_name__(value)
 
@@ -104,12 +98,12 @@ class Stat:
             value (float): The new experience requirement multiplier for the Stat.
 
         Raises:
-            StatError: If the value is outside the bounds.
+            ValueError: If the value is outside the bounds.
         """
         digits_after_decimal = 5
         bounds = (1,10)
         if value<bounds[0] or value>=bounds[1]:
-            raise StatError(f"Stat experience requirement multiplier is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
+            raise ValueError(f"Stat experience requirement multiplier is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
         value = round(value, digits_after_decimal)
         self._exp_requirement_mult = value
 
@@ -132,11 +126,11 @@ class Stat:
             value (int): The new experience requirement flat bonus for the Stat.
 
         Raises:
-            StatError: If the value is outside the specified bounds.
+            ValueError: If the value is outside the specified bounds.
         """
         bounds = (0, 999999)
         if value<bounds[0] or value>bounds[1]:
-            raise StatError(f"Stat experience requirement flat bonus is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
+            raise ValueError(f"Stat experience requirement flat bonus is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
         self._exp_requirement_flat_bonus = value
 
     @property
@@ -158,11 +152,11 @@ class Stat:
             value (int): The new base experience requirement for level 1 of the Stat.
 
         Raises:
-            StatError: If the value is outside the specified bounds.
+            ValueError: If the value is outside the specified bounds.
         """
         bounds = (0, 999999)
         if value<bounds[0] or value>bounds[1]:
-            raise StatError(f"Stat experience base requirements is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
+            raise ValueError(f"Stat experience base requirements is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
         self._level_base_requirement = value
 
     @property
@@ -196,8 +190,34 @@ class Stat:
         #TODO: add check for if icon exists (mby pull list from db)
         bounds = (3, 256)
         if len(value)<bounds[0] or len(value)>bounds[1]:
-            raise StatError(f"Icon base name length is outside the bounds({bounds}, {bounds[1]})! Your length: {len(value)}")
+            raise ValueError(f"Icon base name length is outside the bounds({bounds}, {bounds[1]})! Your length: {len(value)}")
         self._icon_base_name = value
+
+    @property
+    def exp(self) -> int:
+        """
+        Get experience number, earned for the Stat.
+
+        Returns:
+            str: The exp number, earned for Stat.
+        """
+        return self._exp
+    
+    @exp.setter
+    def exp(self, value:int):
+        """
+        Experience for the Stat.
+
+        Args:
+            value (int): The new experience value for the Stat.
+
+        Raises:
+            ValueError: If the value is outside the specified bounds.
+        """
+        bounds = (0, 999999999999) #functionaly no upper limit, big_integer is used in db
+        if value<bounds[0] or value>bounds[1]:
+            raise ValueError(f"Experience value is outside the bounds({bounds}, {bounds[1]})! Your value: {value}")
+        self._exp = value
 
     def __get_id_name__(self, display_name: str = None) -> str:
         """
